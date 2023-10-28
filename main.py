@@ -1,17 +1,32 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import comparator
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def test_comparator():
+    # experiment 1
+    # set_a = set([f'abc\\'])
+    # set_b = set([f'abc\\', f'bca\\'])
+    # set_c = set_b - set_a
+    # print('Experiment 1 ', set_c)
+    #
+    # experiment 2
+    # per1 = f'D:\\_python\\_projects\\file_comparator\\test_sets\\test_set_new1\\Новая папка'
+    # per2 = 'bca'
+    # per3 = f'D:\\_python\\_projects\\file_comparator\\test_sets\\test_set_new1'
+    # per4 = f'\\Новая папка'
+    # per5 = per3 + per4
+    # set_a = set()
+    # set_a.add(per1)
+    # set_b = set()
+    # set_b.add(per3)
+    # set_b.add(per5)
+    # set_c = set_b - set_a
+    # print('Experiment 2 ', set_c)
 
 
-# Press the green button in the gutter to run the script.
+    comp = comparator.Comparator('/test_sets/test_set_old1', '/test_sets/test_set_new1')
+    print(comp)
+    comp.compare()
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-    aa = 4
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    test_comparator()
