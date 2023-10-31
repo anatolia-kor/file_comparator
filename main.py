@@ -23,7 +23,7 @@ def test_comparator():
     # print('Experiment 2 ', set_c)
 
 
-    comp = comparator.Comparator('/test_sets/test_set_old1', '/test_sets/test_set_new1')
+    comp = comparator.Comparator('\\test_sets\\test_set_old', '\\test_sets\\test_set_new')
     print(comp)
     comp.compare()
 
