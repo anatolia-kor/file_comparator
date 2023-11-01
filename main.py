@@ -26,6 +26,8 @@ def test_comparator():
     comp = comparator.Comparator('\\test_sets\\test_set_old', '\\test_sets\\test_set_new')
     print(comp)
     comp.compare()
+    comp.dialog_watch()
+    comp.dialog_open()
 
 
 if __name__ == '__main__':
