@@ -25,6 +25,13 @@ class Comparator(object):
     def __getitem__(self, item):
         return self.set_names[item]
 
+    def set_old_new_set_path(self, old_set_path=None,
+                                   new_set_path=None,
+                                   do_compare_size=False):
+        self.old_set_path = old_set_path
+        self.new_set_path = new_set_path
+
+
     def file_namer(self, address, set_name, d_or_f):
         local_path = address.replace(self.script_dir + self[set_name], '')
         sep = self.bs
