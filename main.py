@@ -23,8 +23,9 @@ def test_comparator():
     # print('Experiment 2 ', set_c)
 
 
-    comp = comparator.Comparator('\\test_sets\\test_set_old', '\\test_sets\\test_set_new')
-    print(comp)
+    # comp = comparator.Comparator('\\test_sets\\test_set_old', '\\test_sets\\test_set_new')
+    comp = comparator.Comparator()
+    # print(comp)
     comp.compare()
     comp.dialog_watch()
     comp.dialog_open()
