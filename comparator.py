@@ -113,7 +113,7 @@ class Comparator(object):
         print(self.text_names['text_sets_diff_alarm'].format(len(new_files_set)))
         sorted_list = list(new_files_set)
         sorted_list.sort()
-        self.new_files = dict(zip(range(1, len(sorted_list)+1), sorted_list))
+        self.new_files = dict(zip(range(1, len(sorted_list) + 1), sorted_list))
 
     def watch(self) -> None:
         if len(self.new_files) == 0:
@@ -151,8 +151,47 @@ class Comparator(object):
                 print(self.text_names['text_open_file_err'].format(answer))
             answer = self.ex_input(self.text_names['text_file_open_instruction'])
 
+    def copy_file_dir(self, file_numb):
+        file_path = self.script_dir + self.bs + self.new_set_path + self.new_files[file_numb]
+        files_path_list = file_path.split('\\')
+        for i in range(len(files_path_list)):
+            if pth.exists(files_path_list[i]):
+                pass
+        #
+        #
+        #
+        # pth.exists()
+        print(self.text_names['text_copy_file_finish'].format(file_numb))
+
     def copy(self):
-        pass
+        if len(self.new_files) == 0:
+            print(self.text_names['text_havent_new_files'])
+            return
+        answer = self.asker('text_dialog_copy')
+        if answer == 'n':
+            return
+        answer = self.ex_input(self.text_names['text_file_copy_instruction'])
+        while not (answer == 'exit' or self.global_answer == 'exit!'):
+            if answer.replace('-', '', 1).isdigit():
+                if '-' in answer:
+                    val_from, val_to = answer.split(sep='-')
+                else:
+                    val_from, val_to = answer, answer
+                if not (val_from.isdigit() and val_to.isdigit()):
+                    print(self.text_names['text_copy_file_err'].format(answer))
+                    answer = self.ex_input(self.text_names['text_file_copy_instruction'])
+                    continue
+                val_from, val_to = int(val_from), int(val_to) + 1
+                if (val_to - 1 > len(self.new_files)) or (val_from < 1) or (val_from > val_to):
+                    print(self.text_names['text_copy_file_err'].format(answer))
+                    answer = self.ex_input(self.text_names['text_file_copy_instruction'])
+                    continue
+                working_range = range(val_from, val_to)
+                for file_number in working_range:
+                    self.copy_file_dir(file_number)
+            else:
+                print(self.text_names['text_copy_file_err'].format(answer))
+            answer = self.ex_input(self.text_names['text_file_copy_instruction'])
 
 
 class Exit(Exception):
