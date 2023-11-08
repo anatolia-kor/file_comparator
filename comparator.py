@@ -50,7 +50,7 @@ class Comparator(object):
                 case _:
                     print(self.text_names['text_err'])
 
-    def ex_input(self, text) -> str:
+    def ex_input(self, text: str) -> str:
         try:
             answer = input(text)
             if answer == 'exit!':
@@ -59,21 +59,21 @@ class Comparator(object):
         except Exit:
             return 'n'
 
-    def asker(self, text_name) -> str:
+    def asker(self, text_name: str) -> str:
         answer = self.ex_input(self[text_name])
         while not (answer == 'y' or answer == 'n'):
-            answer = self.ex_input(f'{self.text_names["text_err"]}{self[text_name]}')
+            answer = self.ex_input(f'{self.text_names["text_err"]}\n{self[text_name]}')
         return answer
 
-    def file_namer(self, address, set_name, d_or_f) -> str:
-        local_path = address.replace(self.script_dir + self[set_name], '')
+    def file_namer(self, address: str, set_name: str, d_or_f: str) -> str:
+        local_path = address.replace(self[set_name], '')
         path = f'{local_path}{self.bs}{str(d_or_f)}'
         if self.do_compare_size:
-            path += self.size_sep + str(pth.getsize(self.script_dir + self[set_name] + path))
+            path += self.size_sep + str(pth.getsize(self[set_name] + path))
         return path
 
-    def set_by_path(self, set_name) -> set:
-        abs_path_os = pth.abspath(self.script_dir + self[set_name])
+    def set_by_path(self, set_name: str) -> set:
+        abs_path_os = pth.abspath(self[set_name])
         file_sys_gen = walk(abs_path_os)
         cur_set = set()
         print(self.text_names['text_fetching'])
@@ -90,16 +90,18 @@ class Comparator(object):
         while self.old_set_path is None:
             print(self.text_names['text_choose_old_dir'])
             self.old_set_path = diropenbox(title=self.text_names['text_choose_old_dir'])
-        self.old_set_path = self.old_set_path.replace(self.script_dir, '')
+        # self.old_set_path = self.old_set_path.replace(self.script_dir, '')
         while self.new_set_path is None:
             print(self.text_names['text_choose_new_dir'])
             self.new_set_path = diropenbox(title=self.text_names['text_choose_new_dir'])
-        self.new_set_path = self.new_set_path.replace(self.script_dir, '')
+        # self.new_set_path = self.new_set_path.replace(self.script_dir, '')
         answer = self.asker('text_do_compare_size')
         self.do_compare_size = answer == 'y'
         print(self.text_names['text_size_check_alarm'].format('enabled' if self.do_compare_size else 'disabled'))
 
-    def refresh_file_list(self, new_file_list):
+    def refresh_file_list(self, new_file_list: list) -> None:
+        if self.do_compare_size:
+            new_file_list = list(map(lambda x: x.split(self.size_sep)[0], new_file_list))
         new_file_list.sort()
         self.new_files = dict(zip(range(1, len(new_file_list) + 1), new_file_list))
 
@@ -155,12 +157,12 @@ class Comparator(object):
                 print(self.text_names['text_open_file_err'].format(answer))
             answer = self.ex_input(self.text_names['text_file_open_instruction'])
 
-    def copy_file_dir(self, file_numb):
+    def copy_file_or_dir(self, file_numb: int) -> None:
         file_path_from = self.script_dir + self.new_set_path + self.new_files[file_numb]
         file_path_to = self.script_dir + self.old_set_path + self.new_files[file_numb]
         file_path_list_from = file_path_from.split('\\')
         file_path_list_to = file_path_to.split('\\')
-        for i in range(1, len(file_path_list_to)+1):
+        for i in range(1, len(file_path_list_to) + 1):
             subpath_from = '\\'
             subpath_from = subpath_from.join(file_path_list_from[0: i])
             subpath_to = '\\'
@@ -174,7 +176,7 @@ class Comparator(object):
                 shutil.copy2(subpath_from, subpath_to)
         print(self.text_names['text_copy_file_finish'].format(file_numb))
 
-    def copy(self):
+    def copy(self) -> None:
         if len(self.new_files) == 0:
             print(self.text_names['text_havent_new_files'])
             return
@@ -199,12 +201,12 @@ class Comparator(object):
                     continue
                 working_range = range(val_from, val_to)
                 for file_number in working_range:
-                    self.copy_file_dir(file_number)
+                    self.copy_file_or_dir(file_number)
                     del self.new_files[file_number]
             else:
                 print(self.text_names['text_copy_file_err'].format(answer))
             answer = self.ex_input(self.text_names['text_file_copy_instruction'])
-        self.refresh_file_list(list(self.new_files.items()))
+        self.refresh_file_list(list(self.new_files.values()))
 
 
 class Exit(Exception):

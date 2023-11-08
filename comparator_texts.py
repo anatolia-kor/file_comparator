@@ -7,7 +7,7 @@ text_commands_instruction = ('---------------Command-menu---------------\n'
                              'To copy files to new directory enter "copy"\n'
                              'To exit the program enter "exit!"\n'
                              '------------------------------------------\n')
-text_err = 'Cant parse your answer.\n'
+text_err = "Can't parse your answer."
 text_open_file_err = "Can't open file with number {}. Watch file list"
 text_copy_file_err = "Can't copy files with command {}. Watch file list"
 text_dir_err = 'First you must choose directories to compare.'
@@ -34,6 +34,6 @@ text_old_set_alarm = 'Old set contains {} files and directories'
 text_new_set_alarm = 'New set contains {} files and directories'
 text_sets_diff_alarm = 'Difference contains {} files and directories'
 text_new_files_list_open = '--------------New-files-list--------------'
-text_new_files_list_close = '------------------------------------------\n'
+text_new_files_list_close = '------------------------------------------'
 text_havent_new_files = "There are no new files or you didn't compare yet"
-text_gb = 'Good bye!\n'
+text_gb = 'Good bye!'
