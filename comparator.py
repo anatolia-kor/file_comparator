@@ -1,9 +1,11 @@
 import os.path as pth
-from os import getcwd, startfile, walk, system
+from os import getcwd, startfile, walk, system, mkdir
 
 from easygui import diropenbox
 
 import comparator_texts as ct
+
+import shutil
 
 
 class Comparator(object):
@@ -97,6 +99,10 @@ class Comparator(object):
         self.do_compare_size = answer == 'y'
         print(self.text_names['text_size_check_alarm'].format('enabled' if self.do_compare_size else 'disabled'))
 
+    def refresh_file_list(self, new_file_list):
+        new_file_list.sort()
+        self.new_files = dict(zip(range(1, len(new_file_list) + 1), new_file_list))
+
     def compare(self) -> None:
         if self.old_set_path is None or self.new_set_path is None or self.do_compare_size is None:
             print(self.text_names['text_dir_err'])
@@ -111,9 +117,7 @@ class Comparator(object):
         print(self.text_names['text_new_set_alarm'].format(len(new_set)))
         new_files_set = new_set - old_set
         print(self.text_names['text_sets_diff_alarm'].format(len(new_files_set)))
-        sorted_list = list(new_files_set)
-        sorted_list.sort()
-        self.new_files = dict(zip(range(1, len(sorted_list) + 1), sorted_list))
+        self.refresh_file_list(list(new_files_set))
 
     def watch(self) -> None:
         if len(self.new_files) == 0:
@@ -144,7 +148,7 @@ class Comparator(object):
             elif answer.isdigit():
                 file_number = int(answer)
                 if file_number in self.new_files.keys():
-                    startfile(self.script_dir + self.bs + self.new_set_path + self.new_files[int(answer)])
+                    startfile(self.script_dir + self.new_set_path + self.new_files[int(answer)])
                 else:
                     print(self.text_names['text_open_file_err'].format(file_number))
             else:
@@ -152,15 +156,22 @@ class Comparator(object):
             answer = self.ex_input(self.text_names['text_file_open_instruction'])
 
     def copy_file_dir(self, file_numb):
-        file_path = self.script_dir + self.bs + self.new_set_path + self.new_files[file_numb]
-        files_path_list = file_path.split('\\')
-        for i in range(len(files_path_list)):
-            if pth.exists(files_path_list[i]):
-                pass
-        #
-        #
-        #
-        # pth.exists()
+        file_path_from = self.script_dir + self.new_set_path + self.new_files[file_numb]
+        file_path_to = self.script_dir + self.old_set_path + self.new_files[file_numb]
+        file_path_list_from = file_path_from.split('\\')
+        file_path_list_to = file_path_to.split('\\')
+        for i in range(1, len(file_path_list_to)+1):
+            subpath_from = '\\'
+            subpath_from = subpath_from.join(file_path_list_from[0: i])
+            subpath_to = '\\'
+            subpath_to = subpath_to.join(file_path_list_to[0: i])
+            if pth.isdir(subpath_from):
+                if pth.exists(subpath_to):
+                    pass
+                else:
+                    mkdir(subpath_to)
+            elif pth.isfile(subpath_from):
+                shutil.copy2(subpath_from, subpath_to)
         print(self.text_names['text_copy_file_finish'].format(file_numb))
 
     def copy(self):
@@ -189,9 +200,11 @@ class Comparator(object):
                 working_range = range(val_from, val_to)
                 for file_number in working_range:
                     self.copy_file_dir(file_number)
+                    del self.new_files[file_number]
             else:
                 print(self.text_names['text_copy_file_err'].format(answer))
             answer = self.ex_input(self.text_names['text_file_copy_instruction'])
+        self.refresh_file_list(list(self.new_files.items()))
 
 
 class Exit(Exception):
