@@ -25,8 +25,8 @@ text_file_open_instruction = ('To open file enter file number.\n'
                               'To show file in catalog enter file number and "e".\n'
                               'To finish opening files print "exit"\n')
 text_file_copy_instruction = ('To copy one file enter file number.\n'
-                              'To copy pack of files enter new list slice "FLfrom-FLto".\n'
-                              'Where FLfrom is file-list-from and FLto is file-list-to\n'
+                              'To copy pack of files enter new list slice "flfrom-flto",\n'
+                              'where flfrom is file-list-from and flto is file-list-to\n'
                               'To finish copying files print "exit"\n')
 text_fetching = 'Fetching catalogs and files..'
 text_size_check_alarm = 'Checking size of files is {}'

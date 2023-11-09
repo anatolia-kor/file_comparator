@@ -1,5 +1,5 @@
 import os.path as pth
-from os import getcwd, startfile, walk, system, mkdir
+from os import startfile, walk, system, mkdir
 
 from easygui import diropenbox
 
@@ -15,7 +15,6 @@ class Comparator(object):
         self.new_set_path = None
         self.do_compare_size = None
         self.new_files = dict()
-        self.script_dir = getcwd()
         self.bs = '\\'
         self.size_sep = ' {***} '
         self.texts = dict()
@@ -82,6 +81,12 @@ class Comparator(object):
             [cur_set.add(self.file_namer(address, set_name, f)) for f in files]
         return cur_set
 
+    def refresh_file_list(self, new_file_list: list) -> None:
+        if self.do_compare_size:
+            new_file_list = list(map(lambda x: x.split(self.size_sep)[0], new_file_list))
+        new_file_list.sort()
+        self.new_files = dict(zip(range(1, len(new_file_list) + 1), new_file_list))
+
     def choose(self) -> None:
         self.old_set_path, self.new_set_path, self.do_compare_size, self.new_files = None, None, None, dict()
         answer = self.asker('text_choose_dirs')
@@ -90,20 +95,12 @@ class Comparator(object):
         while self.old_set_path is None:
             print(self.text_names['text_choose_old_dir'])
             self.old_set_path = diropenbox(title=self.text_names['text_choose_old_dir'])
-        # self.old_set_path = self.old_set_path.replace(self.script_dir, '')
         while self.new_set_path is None:
             print(self.text_names['text_choose_new_dir'])
             self.new_set_path = diropenbox(title=self.text_names['text_choose_new_dir'])
-        # self.new_set_path = self.new_set_path.replace(self.script_dir, '')
         answer = self.asker('text_do_compare_size')
         self.do_compare_size = answer == 'y'
         print(self.text_names['text_size_check_alarm'].format('enabled' if self.do_compare_size else 'disabled'))
-
-    def refresh_file_list(self, new_file_list: list) -> None:
-        if self.do_compare_size:
-            new_file_list = list(map(lambda x: x.split(self.size_sep)[0], new_file_list))
-        new_file_list.sort()
-        self.new_files = dict(zip(range(1, len(new_file_list) + 1), new_file_list))
 
     def compare(self) -> None:
         if self.old_set_path is None or self.new_set_path is None or self.do_compare_size is None:
@@ -144,13 +141,13 @@ class Comparator(object):
             if answer.endswith('e') and answer.replace('e', '').isdigit():
                 file_number = int(answer.replace('e', ''))
                 if file_number in self.new_files.keys():
-                    system(f'explorer.exe /select, {self.script_dir + self.new_set_path + self.new_files[file_number]}')
+                    system(f'explorer.exe /select, {self.new_set_path + self.new_files[file_number]}')
                 else:
                     print(self.text_names['text_open_file_err'].format(file_number))
             elif answer.isdigit():
                 file_number = int(answer)
                 if file_number in self.new_files.keys():
-                    startfile(self.script_dir + self.new_set_path + self.new_files[int(answer)])
+                    startfile(self.new_set_path + self.new_files[int(answer)])
                 else:
                     print(self.text_names['text_open_file_err'].format(file_number))
             else:
@@ -158,8 +155,8 @@ class Comparator(object):
             answer = self.ex_input(self.text_names['text_file_open_instruction'])
 
     def copy_file_or_dir(self, file_numb: int) -> None:
-        file_path_from = self.script_dir + self.new_set_path + self.new_files[file_numb]
-        file_path_to = self.script_dir + self.old_set_path + self.new_files[file_numb]
+        file_path_from = self.new_files[file_numb]
+        file_path_to = self.new_files[file_numb]
         file_path_list_from = file_path_from.split('\\')
         file_path_list_to = file_path_to.split('\\')
         for i in range(1, len(file_path_list_to) + 1):
@@ -167,13 +164,16 @@ class Comparator(object):
             subpath_from = subpath_from.join(file_path_list_from[0: i])
             subpath_to = '\\'
             subpath_to = subpath_to.join(file_path_list_to[0: i])
-            if pth.isdir(subpath_from):
-                if pth.exists(subpath_to):
+            if subpath_to == '':
+                continue
+            if pth.isdir(self.new_set_path + subpath_from):
+                if pth.exists(self.old_set_path + subpath_to):
                     pass
                 else:
-                    mkdir(subpath_to)
-            elif pth.isfile(subpath_from):
-                shutil.copy2(subpath_from, subpath_to)
+                    mkdir(self.old_set_path + subpath_to)
+            elif pth.isfile(self.new_set_path + subpath_from):
+                shutil.copy2(self.new_set_path + subpath_from,
+                             self.old_set_path + subpath_to)
         print(self.text_names['text_copy_file_finish'].format(file_numb))
 
     def copy(self) -> None:
